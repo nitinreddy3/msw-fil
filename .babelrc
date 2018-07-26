@@ -1,0 +1,26 @@
+{ "presets": [ ["env", {modules:false}] ]
+, "plugins": 
+	[ "transform-react-jsx"
+	, "transform-react-display-name"
+	, "transform-strict-mode"
+	, "transform-class-properties"
+	, "transform-function-bind"
+	]
+, "env":
+	{ "development": 
+		{ "plugins": 
+			[ "transform-react-jsx-self"
+			]
+		}
+	, "production": 
+		{ "plugins":
+			[ "transform-react-constant-elements"
+			, "lodash"
+			]
+		}
+	}
+, "comments": false
+, "compact": true
+, "minified": true
+, "sourceMaps": "both"
+}

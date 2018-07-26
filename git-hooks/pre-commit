@@ -1,0 +1,77 @@
+#!/bin/bash -u
+
+# 
+# Run eslint on js and jsx files that are being committed.
+#
+# Improvements from dahjelle/pre-commit.sh:
+# - does not lint deleted files,
+# - lints all staged files before exiting with an error code,
+# - handles spaces and other unusual chars in file names.
+#
+# Based also on @jancimajek's one liner in that Gist.
+#
+
+NAMES=`git diff --diff-filter=d --cached --name-only -- '*.js' '*.jsx' | wc -l`
+if [ ${NAMES} -eq 0 ]; then
+
+  echo "No files to check with eslint" 
+
+else
+
+  # Ensures that eslint exists and die if it is not
+  which eslint || ( echo "Run ./script/install-eslint to get eslint installed"; exit -1 )
+
+  # ESLint staged changes within patient-mobile/bsncAppExpo only
+  git diff --diff-filter=d --cached --name-only -z -- '*.js' '*.jsx' \
+    | xargs -0 -I % sh -c 'eslint --cache --report-unused-disable-directives --quiet --color --fix "%"; git add "%";'
+  git diff --diff-filter=d --cached --name-only -z -- '*.js' '*.jsx' \
+    | xargs -0 -I % sh -c 'git show ":%" | eslint --cache --color --quiet --stdin --stdin-filename "%";'
+  eslint_exit=$?
+
+  if [ ${eslint_exit} -eq 0 ]; then
+    git diff --diff-filter=d --cached --name-only -z -- '*.js' '*.jsx' \
+      | xargs -0 -I % sh -c 'git show ":%" | eslint --max-warnings=0 --cache --color --stdin --stdin-filename "%";'
+    eslint_exit=$?
+    if [ ${eslint_exit} -eq 0 ]; then
+      echo "✓ ESLint passed"
+    else
+      echo "✘ ESLint failed with warnings!" 1>&2
+      echo "But we're letting it run anyway...just warnings."
+    fi
+  else
+    echo "✘ ESLint failed with errors!" 1>&2
+    exit ${eslint_exit}
+  fi
+
+fi
+
+
+#
+# Run jq on json files that are being committed.
+#
+
+NAMES=`git diff --diff-filter=d --cached --name-only -- '*.json' '*.json5' | wc -l`
+if [ ${NAMES} -eq 0 ]; then
+
+  echo "No files to check with jq" 
+
+else
+
+  # Ensures that eslint exists and die if it is not
+  which jq || ( echo "Please install 'jq' for analyzing/verifying JSON files"; exit -1 )
+
+  # ESLint staged changes within patient-mobile/bsncAppExpo only
+  git diff --diff-filter=d --cached --name-only -z -- '*.json' '*.json5' \
+    | xargs -0 -I % sh -c 'git show ":%" | jq . 1>/dev/null'
+  jq_exit=$?
+
+  if [ ${jq_exit} -eq 0 ]; then
+    echo "✓ JSON syntax check passed"
+  else
+    echo "✘ JSON syntax check failed with errors!" 1>&2
+    exit ${jq_exit}
+  fi
+
+fi
+
+

@@ -1,0 +1,18 @@
+#!/bin/bash -exu
+
+HEREDIR=`dirname $0`
+cd "$HEREDIR"
+HEREDIR=`pwd`
+
+# Move to home
+cd $HEREDIR/..
+
+mkdir -p ./.cache 
+
+GHCJS_DIST=`stack path --local-install-root`/bin/app.jsexe 
+echo "(function() {" > ./.cache/ghcjs.js
+pv "$GHCJS_DIST/all.js" >> ./.cache/ghcjs.js
+echo ";" >> ./.cache/ghcjs.js
+pv "$HEREDIR/_postshims.js" >> ./.cache/ghcjs.js
+echo ";" >> ./.cache/ghcjs.js
+echo "})();" >> ./.cache/ghcjs.js

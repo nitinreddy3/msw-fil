@@ -1,0 +1,7 @@
+#!/bin/bash -exu
+
+cd `dirname $0`/..
+stack exec -- hlint -j -c --cross ./src
+# ( stack exec -- hlint -j -c -s --cross ./src || true ) &
+stack build --fast --open
+

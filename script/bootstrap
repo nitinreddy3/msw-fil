@@ -1,0 +1,21 @@
+#!/bin/bash -exu
+
+HEREDIR=`dirname $0`
+cd "$HEREDIR"
+HEREDIR=`pwd`
+
+cd "$HEREDIR/.."
+
+which npm || ( echo "Please install Node through your system package manager (Homebrew, apt, etc.)"; exit -1 )
+which yarn || npm install -g yarn
+yarn global add --latest \
+	eslint \
+	eslint-plugin-react \
+	eslint-plugin-react-native \
+	eslint-plugin-lodash \
+	eslint-plugin-dependencies \
+	eslint-plugin-inlinecheck \
+	eslint-plugin-node \
+	babel-eslint \
+	parcel-bundler
+yarn install

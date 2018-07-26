@@ -1,0 +1,21 @@
+{
+  "name": "MWS-FIL",
+  "version": "1.0.0",
+  "main": "index.html",
+  "license": "ALLRIGHTSRESERVED",
+  "private": true,
+  "devDependencies": {
+    "autoprefixer": "^9.0.1",
+    "node-sass": "^4.9.2",
+    "parcel-bundler": "^1.9.7",
+    "postcss-modules": "^1.3.0"
+  },
+  "dependencies": {
+    "bulma": "^0.7.1"
+  },
+  "browser": "client",
+  "scripts": {
+    "build": "parcel build --detailed-report --log-level 3 ./index.html",
+    "server": "parcel serve --log-level 3 --open ./index.html"
+  }
+}

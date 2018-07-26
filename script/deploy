@@ -1,0 +1,27 @@
+#!/bin/bash -exu
+HEREDIR=`dirname $0`
+cd "$HEREDIR"
+HEREDIR=`pwd`
+
+cd $HEREDIR/..
+rm -r -f -v ./dist/* ./.cache/* ./.cache-loader/*
+stack build --flag admin:production --flag hs-common:production \
+	--flag rfc-prelude:production \
+	--flag rfc-ghcjs:production \
+	--flag rfc-miso:production
+
+"$HEREDIR/_packGHCJS"
+
+PATH="`yarn bin`:$PATH"
+"$HEREDIR/_linkCannerCodeBlock"
+webpack-cli --progress --output-library-target window -p
+
+cd ./dist
+rm -r -v -f ./.cache*
+aws s3 rm s3://admin.test/ --exclude '*' --include '.cache*'
+aws s3 ls s3://admin.test/
+aws s3 sync --acl public-read --storage-class REDUCED_REDUNDANCY . s3://admin.test/ || \
+aws s3 sync --acl public-read --storage-class REDUCED_REDUNDANCY . s3://admin.test/ || \
+aws s3 sync --acl public-read --storage-class REDUCED_REDUNDANCY . s3://admin.test/
+
+xdg-open 'http://admin.test.s3-website-us-east-1.amazonaws.com/'

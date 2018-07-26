@@ -1,0 +1,16 @@
+#!/bin/bash -exu
+
+HEREDIR=`dirname $0`
+cd "$HEREDIR"
+HEREDIR=`pwd`
+
+# Move to home
+cd $HEREDIR/..
+
+# Build GHCJS 
+stack build --fast
+
+# Move GHCJS files to the appropriate place
+"$HEREDIR/_packGHCJS"
+
+PATH="`yarn bin`:$PATH"

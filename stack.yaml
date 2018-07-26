@@ -1,0 +1,38 @@
+resolver: lts-9.21
+compiler: ghcjs-0.2.1.9009021_ghc-8.0.2
+compiler-check: match-exact
+setup-info:
+  ghcjs:
+    source:
+      ghcjs-0.2.1.9009021_ghc-8.0.2:
+        url: https://github.com/matchwood/ghcjs-stack-dist/raw/master/ghcjs-0.2.1.9009021.tar.gz
+        sha1: b1740c3c99e5039ac306702894cd6e58283f4d31
+
+flags:  
+  rfc-prelude: 
+    production: false
+  hs-common:
+    production: false
+  admin:
+    production: false
+
+packages:
+- '.'
+- '../hs-common'
+extra-deps: 
+- git: git@github.com:RobertFischer/rfc.git
+  commit: "06123f9"
+  subdirs:
+    - rfc-prelude
+    - rfc-ghcjs
+    - rfc-miso
+- miso-0.21.1.0
+- classy-prelude-1.4.0
+- geohash-1.0.1
+- servant-0.12.1
+- time-units-1.0.0
+- unliftio-0.2.7.0
+- unliftio-core-0.1.1.0
+- basic-prelude-0.7.0
+- uri-0.1.6.4
+

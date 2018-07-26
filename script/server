@@ -1,0 +1,32 @@
+#!/bin/bash -exu
+
+HEREDIR=`dirname $0`
+cd "$HEREDIR"
+HEREDIR=`pwd`
+
+
+cd "$HEREDIR/.."
+
+rm -r -f -v ./dist/* ./.cache/* ./.cache-loader/*
+
+# Perform the build
+"$HEREDIR/build" || "$HEREDIR/watch" || "$HEREDIR/build"
+
+# Move to home
+cd "$HEREDIR/.."
+
+PIDS=""
+function destroyPids {
+	kill -9 $PIDS || true
+}
+trap destroyPids EXIT
+
+cd "$HEREDIR/.."
+PATH="`yarn bin`:$PATH"
+"$HEREDIR/_linkCannerCodeBlock"
+NODE_ENV="development" webpack-serve --log-level info --no-clipboard --open --config ./webpack.config.js --content ./dist --no-hot-client --no-hot &
+PIDS="$PIDS $!"
+
+cd "$HEREDIR/.."
+GHCJS_DIST=`stack path --local-install-root`/bin/app.jsexe 
+stack build --fast --file-watch --exec "cp -v $GHCJS_DIST/all.js $HEREDIR/../.cache/ghcjs.js"
